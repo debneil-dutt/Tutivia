@@ -1,0 +1,11 @@
+# Ignore Node Modules (the cloud will install these automatically)
+node_modules/
+
+# Ignore Local Database and Uploads (keep the cloud database fresh)
+backend/data/
+
+# Ignore Environment Variables
+.env
+
+# Ignore Mac system files (just in case)
+.DS_Store
