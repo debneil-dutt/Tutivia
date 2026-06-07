@@ -1,0 +1,83 @@
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+const fs = require('fs'); 
+
+// Use cloud path if available, fallback to a local 'data' folder
+const storageFolder = process.env.STORAGE_PATH || path.join(__dirname, 'data');
+
+// Automatically create the folder if it doesn't exist yet
+if (!fs.existsSync(storageFolder)) {
+    fs.mkdirSync(storageFolder, { recursive: true });
+}
+
+// Define the final database file path inside that folder
+const dbPath = path.join(storageFolder, 'tutivia.db');
+
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Database connection error:', err);
+    } else {
+        console.log(`Connected to SQLite database at: ${dbPath}`);
+    }
+});
+
+function initializeDatabase() {
+    db.serialize(() => {
+        // Users table
+        db.run(`CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            userType TEXT NOT NULL,
+            school TEXT,
+            board TEXT,
+            subject TEXT,
+            experience INTEGER,
+            bio TEXT,
+            rating REAL DEFAULT 0,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+
+        // Doubts table
+        db.run(`CREATE TABLE IF NOT EXISTS doubts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            studentId INTEGER NOT NULL,
+            title TEXT NOT NULL,
+            subject TEXT,
+            description TEXT,
+            image TEXT,
+            solved BOOLEAN DEFAULT 0,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(studentId) REFERENCES users(id)
+        )`);
+
+        // Solutions table
+        db.run(`CREATE TABLE IF NOT EXISTS solutions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            doubtId INTEGER NOT NULL,
+            teacherId INTEGER NOT NULL,
+            solutionText TEXT,
+            solutionImage TEXT,
+            rating REAL,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(doubtId) REFERENCES doubts(id),
+            FOREIGN KEY(teacherId) REFERENCES users(id)
+        )`);
+
+        // Messages table
+        db.run(`CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            senderId INTEGER NOT NULL,
+            recipientId INTEGER NOT NULL,
+            subject TEXT NOT NULL,
+            message TEXT NOT NULL,
+            read BOOLEAN DEFAULT 0,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(senderId) REFERENCES users(id),
+            FOREIGN KEY(recipientId) REFERENCES users(id)
+        )`);
+    });
+}
+
+module.exports = { db, initializeDatabase };

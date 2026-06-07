@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solve Doubts - Tutivia</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Tutivia</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="find-students.html">Find Students</a></li>
+                <li><a href="solve-doubts.html">Solve Doubts</a></li>
+                <li><a href="messages.html">Messages</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 2rem;">
+        <h2>Available Doubts to Solve</h2>
+        <div class="search-filter">
+            <div class="search-filter-grid">
+                <input type="text" id="filterSubject" placeholder="Filter by subject...">
+                <select id="filterStatus">
+                    <option value="">All Status</option>
+                    <option value="false">Unsolved</option>
+                    <option value="true">Solved</option>
+                </select>
+                <button class="btn btn-primary" onclick="loadDoubts()">Filter</button>
+            </div>
+        </div>
+        <div id="doubtsList" class="cards-container"></div>
+    </div>
+
+    <script src="assets/script.js"></script>
+    <script>
+        async function loadDoubts() {
+            const subject = document.getElementById('filterSubject').value;
+            const solved = document.getElementById('filterStatus').value;
+
+            let url = `${API_URL}/doubts`;
+            const params = new URLSearchParams();
+            if (subject) params.append('subject', subject);
+            if (solved !== '') params.append('solved', solved);
+
+            if (params.toString()) url += '?' + params.toString();
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const doubtsList = document.getElementById('doubtsList');
+                doubtsList.innerHTML = '';
+
+                if (data.doubts.length === 0) {
+                    doubtsList.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No doubts found</p>';
+                    return;
+                }
+
+                data.doubts.forEach(doubt => {
+                    const statusBadge = doubt.solved ? 
+                        '<span class="badge solved">Solved</span>' : 
+                        '<span class="badge unsolved">Pending</span>';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${doubt.title}</h3>
+                        <p>${doubt.description || ''}</p>
+                        <p><strong>Subject:</strong> ${doubt.subject || 'N/A'}</p>
+                        ${doubt.image ? `<p><strong>Student's Image:</strong> <a href="assets/uploads/${doubt.image}" target="_blank">View</a></p>` : ''}
+                        <div class="card-meta">
+                            <span>Posted: ${formatDate(doubt.createdAt)}</span>
+                            ${statusBadge}
+                        </div>
+                        <div class="card-actions">
+                            ${!doubt.solved ? 
+                                `<button class="btn btn-success btn-small" onclick="uploadSolution(${doubt.id})">Provide Solution</button>` : 
+                                `<button class="btn btn-primary btn-small" onclick="viewSolutions(${doubt.id})">View Solutions</button>`
+                            }
+                        </div>
+                    `;
+                    doubtsList.appendChild(card);
+                });
+            } catch (error) {
+                showAlert('Error loading doubts', 'error');
+                console.error(error);
+            }
+        }
+
+        function uploadSolution(doubtId) {
+            const user = getCurrentUser();
+            if (!user || user.userType !== 'teacher') {
+                showAlert('Only teachers can upload solutions', 'error');
+                return;
+            }
+
+            const solutionText = prompt('Enter your solution:');
+            if (!solutionText) return;
+
+            const formData = new FormData();
+            formData.append('doubtId', doubtId);
+            formData.append('teacherId', user.id);
+            formData.append('solutionText', solutionText);
+
+            fetch(`${API_URL}/solutions`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Solution uploaded successfully!', 'success');
+                    loadDoubts();
+                } else {
+                    showAlert(data.error || 'Error uploading solution', 'error');
+                }
+            })
+            .catch(err => {
+                showAlert('Error uploading solution', 'error');
+                console.error(err);
+            });
+        }
+
+        async function viewSolutions(doubtId) {
+            try {
+                const response = await fetch(`${API_URL}/solutions/${doubtId}`);
+                const data = await response.json();
+
+                if (data.solutions.length === 0) {
+                    showAlert('No solutions available', 'info');
+                    return;
+                }
+
+                // Create modal to display solutions
+                const modal = document.createElement('div');
+                modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+                
+                let html = '<div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; max-height: 80vh; overflow-y: auto; width: 90%;">';
+                html += '<h3>Solutions</h3>';
+                
+                data.solutions.forEach(solution => {
+                    const ratingStars = solution.rating ? 
+                        '⭐'.repeat(Math.round(solution.rating)) + ' (' + solution.rating + '/5)' : 
+                        'Not rated yet';
+                    
+                    html += `
+                        <div style="background: #f8f9fa; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
+                            <h4>${solution.teacherName}</h4>
+                            <p>${solution.solutionText}</p>
+                            ${solution.solutionImage ? `<p><a href="assets/uploads/${solution.solutionImage}" target="_blank">View Solution Image</a></p>` : ''}
+                            <p><strong>Rating:</strong> ${ratingStars}</p>
+                            <select onchange="rateSolution(${solution.id}, this.value); this.parentElement.parentElement.remove();">
+                                <option value="">Rate this solution...</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
+                    `;
+                });
+                
+                html += '<button class="btn btn-secondary" onclick="this.closest(\'div\').parentElement.remove();">Close</button>';
+                html += '</div>';
+                
+                modal.innerHTML = html;
+                document.body.appendChild(modal);
+            } catch (error) {
+                showAlert('Error loading solutions', 'error');
+            }
+        }
+
+        loadDoubts();
+    </script>
+    
+</body>
+</html>

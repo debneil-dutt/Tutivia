@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Teachers - Tutivia</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Tutivia</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="find-teachers.html">Find Teachers</a></li>
+                <li><a href="my-doubts.html">My Doubts</a></li>
+                <li><a href="messages.html">Messages</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 2rem;">
+        <h2>Find Teachers</h2>
+        <div class="search-filter">
+            <div class="search-filter-grid">
+                <input type="text" id="searchSubject" placeholder="Search by subject...">
+                <select id="filterBoard">
+                    <option value="">All Boards</option>
+                    <option value="CBSE">CBSE</option>
+                    <option value="State Board">State Board</option>
+                    <option value="ICSE">ICSE</option>
+                    <option value="IB">IB</option>
+                </select>
+                <input type="number" id="minExperience" placeholder="Minimum Experience (years)">
+                <button class="btn btn-primary" onclick="searchTeachers()">Search</button>
+            </div>
+        </div>
+        <div id="teachersList" class="cards-container"></div>
+    </div>
+
+    <script src="assets/script.js"></script>
+    <script>
+        async function searchTeachers() {
+            const subject = document.getElementById('searchSubject').value;
+            const board = document.getElementById('filterBoard').value;
+            const minExperience = document.getElementById('minExperience').value;
+
+            let url = `${API_URL}/teachers`;
+            const params = new URLSearchParams();
+            if (subject) params.append('subject', subject);
+            if (board) params.append('board', board);
+            if (minExperience) params.append('minExperience', minExperience);
+
+            if (params.toString()) url += '?' + params.toString();
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const teachersList = document.getElementById('teachersList');
+                teachersList.innerHTML = '';
+
+                if (data.teachers.length === 0) {
+                    teachersList.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No teachers found</p>';
+                    return;
+                }
+
+                data.teachers.forEach(teacher => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${teacher.name}</h3>
+                        <p><strong>Subject:</strong> ${teacher.subject || 'N/A'}</p>
+                        <p><strong>Experience:</strong> ${teacher.experience || 0} years</p>
+                        <p><strong>Board:</strong> ${teacher.board || 'N/A'}</p>
+                        <p><small>${teacher.bio || 'No bio available'}</small></p>
+                        <div class="card-meta">
+                            <span>${teacher.email}</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary btn-small" onclick="contactTeacher(${teacher.id}, '${teacher.name}')">Contact Teacher</button>
+                        </div>
+                    `;
+                    teachersList.appendChild(card);
+                });
+            } catch (error) {
+                showAlert('Error fetching teachers', 'error');
+                console.error(error);
+            }
+        }
+
+        function contactTeacher(teacherId, teacherName) {
+            sendMessage(teacherId, teacherName);
+        }
+
+        searchTeachers();
+    </script>
+    
+</body>
+</html>
