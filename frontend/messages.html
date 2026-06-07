@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Tutivia</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Tutivia</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li id="navFindTeacher" style="display:none;"><a href="find-teachers.html">Find Teachers</a></li>
+                <li id="navFindStudent" style="display:none;"><a href="find-students.html">Find Students</a></li>
+                <li id="navDoubt" style="display:none;"><a href="my-doubts.html">My Doubts</a></li>
+                <li id="navSolveDoubts" style="display:none;"><a href="solve-doubts.html">Solve Doubts</a></li>
+                <li id="navMessages" style="display:none;"><a href="messages.html">Messages</a></li>
+                <li id="navProfile" style="display:none;"><a href="profile.html">Profile</a></li>
+                <li id="navLogout" style="display:none;"><a href="#" onclick="logout()">Logout</a></li>
+                <li id="navAuth"><a href="login.html">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 2rem;">
+        <h2>Messages</h2>
+        <div id="messagesContent"></div>
+    </div>
+
+    <script src="assets/script.js"></script>
+    <script>
+        function updateMessagesNavigation() {
+            const user = getCurrentUser();
+            
+            if (user) {
+                document.getElementById('navAuth').style.display = 'none';
+                document.getElementById('navMessages').style.display = 'block';
+                document.getElementById('navProfile').style.display = 'block';
+                document.getElementById('navLogout').style.display = 'block';
+                
+                if (user.userType === 'student') {
+                    document.getElementById('navFindTeacher').style.display = 'block';
+                    document.getElementById('navDoubt').style.display = 'block';
+                } else if (user.userType === 'teacher') {
+                    document.getElementById('navFindStudent').style.display = 'block';
+                    document.getElementById('navSolveDoubts').style.display = 'block';
+                }
+            }
+        }
+
+        updateMessagesNavigation();
+        loadMessages();
+    </script>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Tutivia</h3>
+                    <p>Connecting students and teachers for better learning</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p><strong>Name:</strong> Debneil Dutt</p>
+                    <p><strong>Email:</strong> <a href="mailto:debneildutt.contact@gmail.com">debneildutt.contact@gmail.com</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Tutivia. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
