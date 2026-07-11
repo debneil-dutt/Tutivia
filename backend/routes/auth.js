@@ -136,6 +136,32 @@ router.get('/profile/:userId', (req, res) => {
     });
 });
 
+// Delete user profile
+router.delete('/profile/:userId', (req, res) => {
+    const { userId } = req.params;
+
+    if (!userId) {
+        return res.json({ success: false, error: 'User ID required' });
+    }
+
+    db.serialize(() => {
+        // Delete solutions provided by the user (if teacher)
+        db.run(`DELETE FROM solutions WHERE teacherId = ?`, [userId]);
+        // Delete solutions belonging to doubts asked by the user (if student)
+        db.run(`DELETE FROM solutions WHERE doubtId IN (SELECT id FROM doubts WHERE studentId = ?)`, [userId]);
+        // Delete doubts asked by the user (if student)
+        db.run(`DELETE FROM doubts WHERE studentId = ?`, [userId]);
+        
+        // Finally, delete the user account
+        db.run(`DELETE FROM users WHERE id = ?`, [userId], function(err) {
+            if (err) {
+                return res.json({ success: false, error: 'Error deleting user account' });
+            }
+            res.json({ success: true, message: 'Account deleted successfully' });
+        });
+    });
+});
+
 // Send message
 router.post('/messages', (req, res) => {
     const { senderId, recipientId, subject, message } = req.body;
