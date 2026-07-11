@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Doubts - Tutivia</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Tutivia</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="find-teachers.html">Find Teachers</a></li>
+                <li><a href="my-doubts.html">My Doubts</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="padding-top: 2rem;">
+        <h2>My Doubts & Questions</h2>
+
+        <div style="margin: 2rem 0;">
+            <button class="btn btn-primary" onclick="toggleUploadForm()">Upload New Doubt</button>
+        </div>
+
+        <div id="uploadForm" class="form-container" style="display:none; margin: 0 auto;">
+            <h3>Upload Your Doubt</h3>
+            <form id="doubtForm">
+                <div class="form-group">
+                    <label for="doubtTitle">Question/Title</label>
+                    <input type="text" id="doubtTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="doubtSubject">Subject</label>
+                    <select id="doubtSubject">
+                        <option value="">Select Subject</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="History">History</option>
+                        <option value="Geography">Geography</option>
+                        <option value="English">English</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Hindi">Hindi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="doubtDescription">Description</label>
+                    <textarea id="doubtDescription" placeholder="Describe your doubt in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="doubtImage">Attach Image (optional)</label>
+                    <input type="file" id="doubtImage" accept="image/*">
+                </div>
+                <button type="submit" class="btn-submit">Upload Doubt</button>
+            </form>
+        </div>
+        <div id="doubtsList" class="cards-container"></div>
+    </div>
+
+    <script src="assets/script.js"></script>
+    <script>
+        function toggleUploadForm() {
+            const form = document.getElementById('uploadForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function loadMyDoubts() {
+            const user = getCurrentUser();
+            if (!user || user.userType !== 'student') {
+                showAlert('Please login as a student', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/doubts?studentId=${user.id}`);
+                const data = await response.json();
+
+                const doubtsList = document.getElementById('doubtsList');
+                doubtsList.innerHTML = '';
+
+                if (data.doubts.length === 0) {
+                    doubtsList.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No doubts uploaded yet</p>';
+                    return;
+                }
+
+                data.doubts.forEach(doubt => {
+                    const statusBadge = doubt.solved ? 
+                        '<span class="badge solved">Solved</span>' : 
+                        '<span class="badge unsolved">Pending</span>';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>${doubt.title}</h3>
+                        <p>${doubt.description || ''}</p>
+                        <p><strong>Subject:</strong> ${doubt.subject || 'N/A'}</p>
+                        ${doubt.image ? `<p><strong>Attachment:</strong> <a href="${API_URL}/uploads/${doubt.image}" target="_blank">View Image</a></p>` : ''}
+                        <div class="card-meta">
+                            <span>${formatDate(doubt.createdAt)}</span>
+                            ${statusBadge}
+                        </div>
+                        <div class="card-actions">
+                            ${doubt.solved ? 
+                                `<button class="btn btn-primary btn-small" onclick="viewSolutions(${doubt.id})">View Solutions</button>` : 
+                                `<button class="btn btn-danger btn-small" onclick="deleteDoubt(${doubt.id})">Delete</button>`
+                            }
+                        </div>
+                    `;
+                    doubtsList.appendChild(card);
+                });
+            } catch (error) {
+                showAlert('Error loading doubts', 'error');
+                console.error(error);
+            }
+        }
+
+        async function viewSolutions(doubtId) {
+            try {
+                const response = await fetch(`${API_URL}/solutions/${doubtId}`);
+                const data = await response.json();
+
+                if (data.solutions.length === 0) {
+                    showAlert('No solutions available yet', 'info');
+                    return;
+                }
+
+                let solutions = '<h3>Solutions:</h3>';
+                data.solutions.forEach(solution => {
+                    solutions += `
+                        <div style="background: #f8f9fa; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
+                            <h4>${solution.teacherName}</h4>
+                            <p>${solution.solutionText}</p>
+                            ${solution.solutionImage ? `<p><a href="${API_URL}/uploads/${solution.solutionImage}" target="_blank">View Solution Image</a></p>` : ''}
+                            ${solution.rating ? `<p>Rating: ${solution.rating}/5</p>` : ''}
+                        </div>
+                    `;
+                });
+
+                alert(solutions);
+            } catch (error) {
+                showAlert('Error loading solutions', 'error');
+            }
+        }
+
+        async function deleteDoubt(doubtId) {
+            if (!confirm('Are you sure you want to delete this doubt?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/doubts/${doubtId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Doubt deleted successfully', 'success');
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showAlert(data.error || 'Error deleting doubt', 'error');
+                }
+            } catch (error) {
+                showAlert('Error deleting doubt', 'error');
+                console.error(error);
+            }
+        }
+
+        document.getElementById('doubtForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user = getCurrentUser();
+            if (!user) {
+                showAlert('Please login first', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('studentId', user.id);
+            formData.append('title', document.getElementById('doubtTitle').value);
+            formData.append('subject', document.getElementById('doubtSubject').value);
+            formData.append('description', document.getElementById('doubtDescription').value);
+            
+            const imageFile = document.getElementById('doubtImage').files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/doubts`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Doubt uploaded successfully!', 'success');
+                    document.getElementById('doubtForm').reset();
+                    toggleUploadForm();
+                    loadMyDoubts();
+                } else {
+                    showAlert(data.error || 'Error uploading doubt', 'error');
+                }
+            } catch (error) {
+                showAlert('Error uploading doubt', 'error');
+                console.error(error);
+            }
+        });
+
+        loadMyDoubts();
+    </script>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Tutivia</h3>
+                    <p>Connecting students and teachers for better learning</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p><strong>Name:</strong> Debneil Dutt</p>
+                    <p><strong>Email:</strong> <a href="mailto:debneildutt.contact@gmail.com">debneildutt.contact@gmail.com</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Tutivia. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
