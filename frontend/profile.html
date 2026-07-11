@@ -94,7 +94,12 @@
                             </div>
                             <div class="form-group">
                                 <label for="editBoard">Board:</label>
-                                <input type="text" id="editBoard" name="board" value="${user.board || ''}">
+                                <select id="editBoard" name="board">
+                                    <option value="">Select Board</option>
+                                    <option value="CBSE" ${user.board === 'CBSE' ? 'selected' : ''}>CBSE</option>
+                                    <option value="State Board" ${user.board === 'State Board' ? 'selected' : ''}>State Board</option>
+                                    <option value="ICSE" ${user.board === 'ICSE' ? 'selected' : ''}>ICSE</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="editSubject">Subjects Needed Help In:</label>
