@@ -36,18 +36,19 @@
                 <label for="school">School/College</label>
                 <input type="text" id="school" placeholder="Optional">
             </div>
-            <div class="form-group">
-                <label for="board">Board</label>
-                <select id="board">
-                    <option value="">Select Board</option>
-                    <option value="CBSE">CBSE</option>
-                    <option value="State Board">State Board</option>
-                    <option value="ICSE">ICSE</option>
-                </select>
-            </div>
+                <!-- Removed from general, handled separately for student and teacher -->
 
             <!-- Student specific -->
             <div id="studentFields">
+                <div class="form-group">
+                    <label for="studentBoard">Board</label>
+                    <select id="studentBoard">
+                        <option value="">Select Board</option>
+                        <option value="CBSE">CBSE</option>
+                        <option value="State Board">State Board</option>
+                        <option value="ICSE">ICSE</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="subject">Subjects Needed Help In</label>
                     <div class="checkbox-group" id="studentSubjectsGroup">
@@ -82,8 +83,17 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="teacherBoard">Board Expertise</label>
+                    <div class="checkbox-group" id="teacherBoardGroup">
+                        <label><input type="checkbox" name="board" value="CBSE"> CBSE</label>
+                        <label><input type="checkbox" name="board" value="State Board"> State Board</label>
+                        <label><input type="checkbox" name="board" value="ICSE"> ICSE</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="experience">Years of Experience</label>
-                    <input type="number" id="experience" placeholder="e.g., 5">
+                    <input type="number" id="experience" placeholder="e.g., 5" min="0">
                 </div>
 
                 <div class="form-group">
@@ -127,18 +137,17 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const school = document.getElementById('school').value;
-            const board = document.getElementById('board').value;
 
             let payload = {
                 name,
                 email,
                 password,
                 userType,
-                school: school || null,
-                board: board || null
+                school: school || null
             };
 
             if (userType === 'student') {
+                const board = document.getElementById('studentBoard').value;
                 if (!board) {
                     showAlert('Please select a Board', 'error');
                     return;
@@ -149,9 +158,18 @@
                     return;
                 }
                 payload.subject = selectedSubjects.join(', ');
+                payload.board = board;
             } else {
                 const selectedExpertise = Array.from(document.querySelectorAll('#teacherSubjectsGroup input[type="checkbox"]:checked')).map(cb => cb.value);
+                const selectedBoards = Array.from(document.querySelectorAll('#teacherBoardGroup input[type="checkbox"]:checked')).map(cb => cb.value);
+                
+                if (selectedBoards.length === 0) {
+                    showAlert('Please select at least 1 board', 'error');
+                    return;
+                }
+
                 payload.subject = selectedExpertise.length > 0 ? selectedExpertise.join(', ') : null;
+                payload.board = selectedBoards.join(', ');
                 payload.experience = parseInt(document.getElementById('experience').value) || null;
                 payload.bio = document.getElementById('bio').value || null;
             }
