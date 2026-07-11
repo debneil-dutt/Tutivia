@@ -108,6 +108,9 @@
                         `}
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
+                    <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #ffcccc;">
+                    <h3 style="color: #dc3545;">Danger Zone</h3>
+                    <button type="button" class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
                 </div>
             `;
 
@@ -115,6 +118,34 @@
         }
 
         loadProfile();
+
+        async function deleteAccount() {
+            if (!confirm("Are you sure you want to permanently delete your account? This action cannot be undone and will delete all your doubts and solutions.")) {
+                return;
+            }
+
+            const user = getCurrentUser();
+            if (!user) return;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/profile/${user.id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Account deleted successfully. Redirecting...', 'success');
+                    localStorage.removeItem('user');
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                } else {
+                    showAlert(data.error || 'Failed to delete account', 'error');
+                }
+            } catch (error) {
+                showAlert('Error deleting account', 'error');
+                console.error(error);
+            }
+        }
     </script>
     
     <!-- Footer -->
