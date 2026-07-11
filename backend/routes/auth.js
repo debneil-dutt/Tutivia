@@ -51,7 +51,11 @@ router.post('/login', (req, res) => {
                 name: user.name,
                 email: user.email,
                 userType: user.userType,
-                subject: user.subject
+                subject: user.subject,
+                board: user.board,
+                school: user.school,
+                experience: user.experience,
+                bio: user.bio
             }
         });
     });
