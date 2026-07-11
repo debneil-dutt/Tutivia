@@ -163,12 +163,17 @@
                 const selectedExpertise = Array.from(document.querySelectorAll('#teacherSubjectsGroup input[type="checkbox"]:checked')).map(cb => cb.value);
                 const selectedBoards = Array.from(document.querySelectorAll('#teacherBoardGroup input[type="checkbox"]:checked')).map(cb => cb.value);
                 
+                if (selectedExpertise.length === 0) {
+                    showAlert('Please select at least 1 subject expertise', 'error');
+                    return;
+                }
+
                 if (selectedBoards.length === 0) {
                     showAlert('Please select at least 1 board', 'error');
                     return;
                 }
 
-                payload.subject = selectedExpertise.length > 0 ? selectedExpertise.join(', ') : null;
+                payload.subject = selectedExpertise.join(', ');
                 payload.board = selectedBoards.join(', ');
                 payload.experience = parseInt(document.getElementById('experience').value) || null;
                 payload.bio = document.getElementById('bio').value || null;
@@ -189,7 +194,11 @@
                         name: name,
                         email: email,
                         userType: userType,
-                        subject: payload.subject
+                        subject: payload.subject,
+                        board: payload.board,
+                        school: payload.school,
+                        experience: payload.experience,
+                        bio: payload.bio
                     }));
                     showAlert('Account created successfully! Redirecting...', 'success');
                     setTimeout(() => window.location.href = 'index.html', 1500);
