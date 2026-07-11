@@ -137,8 +137,18 @@ async function updateProfile(event) {
         updates.subject = null;
     }
 
+    // Handle multiple select for boards (for teachers)
+    if (user.userType === 'teacher' && formData.getAll('board').length > 0) {
+        updates.board = formData.getAll('board').join(', ');
+    }
+
+    if (updates.experience && parseInt(updates.experience) < 0) {
+        showAlert('Years of experience cannot be negative', 'error');
+        return;
+    }
+
     try {
-        const response = await fetch(`${API_URL}/profile/${user.id}`, {
+        const response = await fetch(`${API_URL}/auth/profile/${user.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updates)
