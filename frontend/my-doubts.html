@@ -173,11 +173,16 @@
         document.getElementById('doubtForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
             const user = getCurrentUser();
             if (!user) {
                 showAlert('Please login first', 'error');
                 return;
             }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
 
             const formData = new FormData();
             formData.append('studentId', user.id);
@@ -209,6 +214,9 @@
             } catch (error) {
                 showAlert('Error uploading doubt', 'error');
                 console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Upload Doubt';
             }
         });
 
