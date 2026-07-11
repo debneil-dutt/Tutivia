@@ -34,6 +34,7 @@
             }
 
             const userSubjects = user.subject ? user.subject.split(',').map(s => s.trim()) : [];
+            const userBoards = user.board ? user.board.split(',').map(s => s.trim()) : [];
             const profileHTML = `
                 <div style="background: white; padding: 2rem; border-radius: 8px;">
                     <h3>Current Profile Information</h3>
@@ -72,11 +73,15 @@
                             </div>
                             <div class="form-group">
                                 <label for="editExperience">Years of Experience:</label>
-                                <input type="number" id="editExperience" name="experience" value="${user.experience || ''}">
+                                <input type="number" id="editExperience" name="experience" value="${user.experience || ''}" min="0">
                             </div>
                             <div class="form-group">
-                                <label for="editBoard">Board:</label>
-                                <input type="text" id="editBoard" name="board" value="${user.board || ''}">
+                                <label for="editBoard">Board Expertise:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="board" value="CBSE" ${userBoards.includes('CBSE') ? 'checked' : ''}> CBSE</label>
+                                    <label><input type="checkbox" name="board" value="State Board" ${userBoards.includes('State Board') ? 'checked' : ''}> State Board</label>
+                                    <label><input type="checkbox" name="board" value="ICSE" ${userBoards.includes('ICSE') ? 'checked' : ''}> ICSE</label>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="editBio">Bio:</label>
