@@ -139,8 +139,16 @@
             };
 
             if (userType === 'student') {
+                if (!board) {
+                    showAlert('Please select a Board', 'error');
+                    return;
+                }
                 const selectedSubjects = Array.from(document.querySelectorAll('#studentSubjectsGroup input[type="checkbox"]:checked')).map(cb => cb.value);
-                payload.subject = selectedSubjects.length > 0 ? selectedSubjects.join(', ') : null;
+                if (selectedSubjects.length === 0) {
+                    showAlert('Please select at least 1 subject you need help in', 'error');
+                    return;
+                }
+                payload.subject = selectedSubjects.join(', ');
             } else {
                 const selectedExpertise = Array.from(document.querySelectorAll('#teacherSubjectsGroup input[type="checkbox"]:checked')).map(cb => cb.value);
                 payload.subject = selectedExpertise.length > 0 ? selectedExpertise.join(', ') : null;
