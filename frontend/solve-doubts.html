@@ -122,12 +122,16 @@
 
                 let solutions = '<h3>Solutions:</h3>';
                 data.solutions.forEach(solution => {
+                    const ratingDisplay = solution.rating ? `<p><strong>Rating:</strong> ${solution.rating}/5</p>` : '';
+                    const feedbackDisplay = solution.feedback ? `<p><strong>Feedback:</strong> ${solution.feedback}</p>` : '';
+
                     solutions += `
                         <div style="background: #f8f9fa; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
                             <h4>Teacher: ${solution.teacherName}</h4>
                             <p>${solution.solutionText}</p>
                             ${solution.solutionImage ? `<p><a href="${API_URL}/uploads/${solution.solutionImage}" target="_blank">View Solution Image</a></p>` : ''}
-                            ${solution.rating ? `<p>Rating: ${solution.rating}/5</p>` : ''}
+                            ${ratingDisplay}
+                            ${feedbackDisplay}
                         </div>
                     `;
                 });
