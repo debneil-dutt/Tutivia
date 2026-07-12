@@ -31,7 +31,7 @@ const upload = multer({ storage });
 router.get('/solutions/:doubtId', (req, res) => {
     const { doubtId } = req.params;
 
-    const query = `SELECT s.id, s.solutionText, s.solutionImage, s.rating, COALESCE(u.name, 'Unknown Teacher') as teacherName 
+    const query = `SELECT s.id, s.solutionText, s.solutionImage, s.rating, s.feedback, COALESCE(u.name, 'Unknown Teacher') as teacherName 
                    FROM solutions s 
                    LEFT JOIN users u ON s.teacherId = u.id 
                    WHERE s.doubtId = ?
@@ -82,23 +82,37 @@ router.post('/solutions', upload.single('solutionImage'), (req, res) => {
 // Rate a solution
 router.put('/solutions/:solutionId/rating', (req, res) => {
     const { solutionId } = req.params;
-    const { rating } = req.body;
+    const { rating, feedback } = req.body;
 
-    if (!solutionId || rating === undefined || rating === null) {
-        return res.json({ success: false, error: 'Solution ID and rating required' });
+    if (!solutionId) {
+        return res.json({ success: false, error: 'Solution ID required' });
     }
 
-    if (rating < 1 || rating > 5) {
+    if (rating !== undefined && (rating < 1 || rating > 5)) {
         return res.json({ success: false, error: 'Rating must be between 1 and 5' });
     }
 
-    const query = `UPDATE solutions SET rating = ? WHERE id = ?`;
+    let query;
+    let params;
 
-    db.run(query, [rating, solutionId], (err) => {
+    if (rating !== undefined && feedback !== undefined) {
+        query = `UPDATE solutions SET rating = ?, feedback = ? WHERE id = ?`;
+        params = [rating, feedback, solutionId];
+    } else if (rating !== undefined) {
+        query = `UPDATE solutions SET rating = ? WHERE id = ?`;
+        params = [rating, solutionId];
+    } else if (feedback !== undefined) {
+        query = `UPDATE solutions SET feedback = ? WHERE id = ?`;
+        params = [feedback, solutionId];
+    } else {
+        return res.json({ success: false, error: 'Rating or feedback required' });
+    }
+
+    db.run(query, params, (err) => {
         if (err) {
-            return res.json({ success: false, error: 'Error updating rating' });
+            return res.json({ success: false, error: 'Error updating solution' });
         }
-        res.json({ success: true, message: 'Rating updated successfully' });
+        res.json({ success: true, message: 'Solution updated successfully' });
     });
 });
 
