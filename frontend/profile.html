@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Tutivia</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Tutivia</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav> 
+
+    <div class="form-container" style="max-width: 600px;">
+        <h2>My Profile</h2>
+        <div id="profileContent"></div>
+    </div>
+
+    <script src="assets/script.js"></script>
+    <script>
+        function loadProfile() {
+            const user = getCurrentUser();
+            if (!user) {
+                document.getElementById('profileContent').innerHTML = '<p>Please login to view your profile</p>';
+                return;
+            }
+
+            const userSubjects = user.subject ? user.subject.split(',').map(s => s.trim()) : [];
+            const userBoards = user.board ? user.board.split(',').map(s => s.trim()) : [];
+            const profileHTML = `
+                <div style="background: white; padding: 2rem; border-radius: 8px;">
+                    <h3>Current Profile Information</h3>
+                    <div id="profileView">
+                        <p><strong>Name:</strong> ${user.name}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>Role:</strong> <span class="badge ${user.userType === 'teacher' ? 'teacher' : 'student'}">${user.userType.charAt(0).toUpperCase() + user.userType.slice(1)}</span></p>
+                        ${user.subject ? `<p><strong>Subject/Expertise:</strong> ${user.subject}</p>` : ''}
+                        ${user.experience ? `<p><strong>Experience:</strong> ${user.experience} years</p>` : ''}
+                    </div>
+                    <hr style="margin: 2rem 0;">
+                    <h3>Edit Profile</h3>
+                    <form id="editProfileForm" onsubmit="updateProfile(event)">
+                        <div class="form-group">
+                            <label for="editName">Name:</label>
+                            <input type="text" id="editName" name="name" value="${user.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">Email:</label>
+                            <input type="email" id="editEmail" name="email" value="${user.email}" required>
+                        </div>
+                        ${user.userType === 'teacher' ? `
+                            <div class="form-group">
+                                <label for="editSubject">Subject/Expertise:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="subject" value="Mathematics" ${userSubjects.includes('Mathematics') ? 'checked' : ''}> Mathematics</label>
+                                    <label><input type="checkbox" name="subject" value="Physics" ${userSubjects.includes('Physics') ? 'checked' : ''}> Physics</label>
+                                    <label><input type="checkbox" name="subject" value="Chemistry" ${userSubjects.includes('Chemistry') ? 'checked' : ''}> Chemistry</label>
+                                    <label><input type="checkbox" name="subject" value="Biology" ${userSubjects.includes('Biology') ? 'checked' : ''}> Biology</label>
+                                    <label><input type="checkbox" name="subject" value="History" ${userSubjects.includes('History') ? 'checked' : ''}> History</label>
+                                    <label><input type="checkbox" name="subject" value="Geography" ${userSubjects.includes('Geography') ? 'checked' : ''}> Geography</label>
+                                    <label><input type="checkbox" name="subject" value="English" ${userSubjects.includes('English') ? 'checked' : ''}> English</label>
+                                    <label><input type="checkbox" name="subject" value="Bengali" ${userSubjects.includes('Bengali') ? 'checked' : ''}> Bengali</label>
+                                    <label><input type="checkbox" name="subject" value="Hindi" ${userSubjects.includes('Hindi') ? 'checked' : ''}> Hindi</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editExperience">Years of Experience:</label>
+                                <input type="number" id="editExperience" name="experience" value="${user.experience || ''}" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="editBoard">Board Expertise:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="board" value="CBSE" ${userBoards.includes('CBSE') ? 'checked' : ''}> CBSE</label>
+                                    <label><input type="checkbox" name="board" value="State Board" ${userBoards.includes('State Board') ? 'checked' : ''}> State Board</label>
+                                    <label><input type="checkbox" name="board" value="ICSE" ${userBoards.includes('ICSE') ? 'checked' : ''}> ICSE</label>
+                                    <label><input type="checkbox" name="board" value="IB" ${userBoards.includes('IB') ? 'checked' : ''}> IB</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBio">Bio:</label>
+                                <textarea id="editBio" name="bio" rows="3">${user.bio || ''}</textarea>
+                            </div>
+                        ` : `
+                            <div class="form-group">
+                                <label for="editSchool">School:</label>
+                                <input type="text" id="editSchool" name="school" value="${user.school || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="editBoard">Board:</label>
+                                <select id="editBoard" name="board">
+                                    <option value="">Select Board</option>
+                                    <option value="CBSE" ${user.board === 'CBSE' ? 'selected' : ''}>CBSE</option>
+                                    <option value="State Board" ${user.board === 'State Board' ? 'selected' : ''}>State Board</option>
+                                    <option value="ICSE" ${user.board === 'ICSE' ? 'selected' : ''}>ICSE</option>
+                                    <option value="IB" ${user.board === 'IB' ? 'selected' : ''}>IB</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editSubject">Subjects Needed Help In:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="subject" value="Mathematics" ${userSubjects.includes('Mathematics') ? 'checked' : ''}> Mathematics</label>
+                                    <label><input type="checkbox" name="subject" value="Physics" ${userSubjects.includes('Physics') ? 'checked' : ''}> Physics</label>
+                                    <label><input type="checkbox" name="subject" value="Chemistry" ${userSubjects.includes('Chemistry') ? 'checked' : ''}> Chemistry</label>
+                                    <label><input type="checkbox" name="subject" value="Biology" ${userSubjects.includes('Biology') ? 'checked' : ''}> Biology</label>
+                                    <label><input type="checkbox" name="subject" value="History" ${userSubjects.includes('History') ? 'checked' : ''}> History</label>
+                                    <label><input type="checkbox" name="subject" value="Geography" ${userSubjects.includes('Geography') ? 'checked' : ''}> Geography</label>
+                                    <label><input type="checkbox" name="subject" value="English" ${userSubjects.includes('English') ? 'checked' : ''}> English</label>
+                                    <label><input type="checkbox" name="subject" value="Bengali" ${userSubjects.includes('Bengali') ? 'checked' : ''}> Bengali</label>
+                                    <label><input type="checkbox" name="subject" value="Hindi" ${userSubjects.includes('Hindi') ? 'checked' : ''}> Hindi</label>
+                                </div>
+                            </div>
+                        `}
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                    <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #ffcccc;">
+                    <h3 style="color: #dc3545;">Danger Zone</h3>
+                    <button type="button" class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+                </div>
+            `;
+
+            document.getElementById('profileContent').innerHTML = profileHTML;
+        }
+
+        loadProfile();
+
+        async function deleteAccount() {
+            if (!confirm("Are you sure you want to permanently delete your account? This action cannot be undone and will delete all your doubts and solutions.")) {
+                return;
+            }
+
+            const user = getCurrentUser();
+            if (!user) return;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/profile/${user.id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('Account deleted successfully. Redirecting...', 'success');
+                    localStorage.removeItem('user');
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                } else {
+                    showAlert(data.error || 'Failed to delete account', 'error');
+                }
+            } catch (error) {
+                showAlert('Error deleting account', 'error');
+                console.error(error);
+            }
+        }
+    </script>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Tutivia</h3>
+                    <p>Connecting students and teachers for better learning</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p><strong>Name:</strong> Debneil Dutt</p>
+                    <p><strong>Email:</strong> <a href="mailto:debneildutt.contact@gmail.com">debneildutt.contact@gmail.com</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Tutivia. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
