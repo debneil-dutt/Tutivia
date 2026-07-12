@@ -133,12 +133,33 @@
 
                 let solutions = '<h3>Solutions:</h3>';
                 data.solutions.forEach(solution => {
+                    const ratingDisplay = solution.rating ? `<p><strong>Rating:</strong> ${solution.rating}/5</p>` : '';
+                    const feedbackDisplay = solution.feedback ? `<p><strong>Feedback:</strong> ${solution.feedback}</p>` : '';
+
                     solutions += `
                         <div style="background: #f8f9fa; padding: 1rem; margin: 1rem 0; border-radius: 5px;">
                             <h4>${solution.teacherName}</h4>
                             <p>${solution.solutionText}</p>
                             ${solution.solutionImage ? `<p><a href="${API_URL}/uploads/${solution.solutionImage}" target="_blank">View Solution Image</a></p>` : ''}
-                            ${solution.rating ? `<p>Rating: ${solution.rating}/5</p>` : ''}
+                            ${ratingDisplay}
+                            ${feedbackDisplay}
+                            
+                            <hr style="margin: 1rem 0; border: none; border-top: 1px solid #ddd;">
+                            <h5 style="margin-bottom: 0.5rem;">Rate & Feedback (Optional)</h5>
+                            <div style="margin-bottom: 0.5rem;">
+                                <select id="rating-${solution.id}" style="padding: 0.3rem;">
+                                    <option value="">Select Rating (1-5)</option>
+                                    <option value="1">1 Star</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="5">5 Stars</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 0.5rem;">
+                                <textarea id="feedback-${solution.id}" placeholder="Write your feedback..." style="width: 100%; height: 60px; padding: 0.5rem;"></textarea>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="rateSolution(${solution.id})">Submit Feedback</button>
                         </div>
                     `;
                 });
