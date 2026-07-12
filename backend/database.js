@@ -60,10 +60,14 @@ function initializeDatabase() {
             solutionText TEXT,
             solutionImage TEXT,
             rating REAL,
+            feedback TEXT,
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(doubtId) REFERENCES doubts(id),
             FOREIGN KEY(teacherId) REFERENCES users(id)
-        )`);
+        )`, () => {
+            // Attempt to add feedback column if table already exists (ignore error if it already has the column)
+            db.run(`ALTER TABLE solutions ADD COLUMN feedback TEXT`, (err) => { /* ignore */ });
+        });
 
     });
 }
