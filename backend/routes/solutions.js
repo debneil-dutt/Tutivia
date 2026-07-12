@@ -31,9 +31,9 @@ const upload = multer({ storage });
 router.get('/solutions/:doubtId', (req, res) => {
     const { doubtId } = req.params;
 
-    const query = `SELECT s.id, s.solutionText, s.solutionImage, s.rating, u.name as teacherName 
+    const query = `SELECT s.id, s.solutionText, s.solutionImage, s.rating, COALESCE(u.name, 'Unknown Teacher') as teacherName 
                    FROM solutions s 
-                   JOIN users u ON s.teacherId = u.id 
+                   LEFT JOIN users u ON s.teacherId = u.id 
                    WHERE s.doubtId = ?
                    ORDER BY s.createdAt DESC`;
 
@@ -58,10 +58,15 @@ router.post('/solutions', upload.single('solutionImage'), (req, res) => {
         return res.json({ success: false, error: 'Missing required fields' });
     }
 
-    const query = `INSERT INTO solutions (doubtId, teacherId, solutionText, solutionImage, rating) 
-                   VALUES (?, ?, ?, ?, ?)`;
+    db.get(`SELECT id FROM users WHERE id = ?`, [teacherId], (err, user) => {
+        if (err || !user) {
+            return res.json({ success: false, error: 'Teacher account not found. Please log in again.' });
+        }
 
-    db.run(query, [doubtId, teacherId, solutionText, solutionImage, rating || null], function(err) {
+        const query = `INSERT INTO solutions (doubtId, teacherId, solutionText, solutionImage, rating) 
+                       VALUES (?, ?, ?, ?, ?)`;
+
+        db.run(query, [doubtId, teacherId, solutionText, solutionImage, rating || null], function(err) {
         if (err) {
             return res.json({ success: false, error: 'Error uploading solution' });
         }
@@ -70,6 +75,7 @@ router.post('/solutions', upload.single('solutionImage'), (req, res) => {
         db.run(`UPDATE doubts SET solved = 1 WHERE id = ?`, [doubtId]);
 
         res.json({ success: true, solutionId: this.lastID });
+    });
     });
 });
 
