@@ -96,23 +96,33 @@ async function deleteDoubt(doubtId) {
 }
 
 // Rate a solution
-async function rateSolution(solutionId, rating) {
+async function rateSolution(solutionId) {
+    const ratingElement = document.getElementById(`rating-${solutionId}`);
+    const feedbackElement = document.getElementById(`feedback-${solutionId}`);
+    
+    const rating = ratingElement ? ratingElement.value : null;
+    const feedback = feedbackElement ? feedbackElement.value : null;
+
     try {
         const response = await fetch(`${API_URL}/solutions/${solutionId}/rating`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ rating: parseInt(rating) })
+            body: JSON.stringify({ 
+                rating: rating ? parseInt(rating) : undefined, 
+                feedback: feedback || undefined 
+            })
         });
         const data = await response.json();
 
         if (data.success) {
-            showAlert(`Solution rated ${rating}/5 stars`, 'success');
+            showAlert(`Feedback submitted successfully`, 'success');
+            // Wait a moment then reload to show updated data
             setTimeout(() => location.reload(), 1500);
         } else {
-            showAlert(data.error || 'Error rating solution', 'error');
+            showAlert(data.error || 'Error submitting feedback', 'error');
         }
     } catch (error) {
-        showAlert('Error rating solution', 'error');
+        showAlert('Error submitting feedback', 'error');
         console.error(error);
     }
 }
