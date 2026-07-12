@@ -143,7 +143,16 @@
                     `;
                 });
 
-                alert(solutions);
+                const modalDiv = document.createElement('div');
+                modalDiv.innerHTML = `
+                    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; justify-content: center; align-items: center;">
+                        <div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                            ${solutions}
+                            <button class="btn btn-secondary" onclick="this.parentElement.parentElement.remove()" style="margin-top: 1rem;">Close</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modalDiv);
             } catch (error) {
                 showAlert('Error loading solutions', 'error');
             }
