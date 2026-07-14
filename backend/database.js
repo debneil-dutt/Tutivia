@@ -1,6 +1,7 @@
+```js
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-const fs = require('fs'); 
+const fs = require('fs');
 
 // Use cloud path if available, fallback to a local 'data' folder
 const storageFolder = process.env.STORAGE_PATH || path.join(__dirname, 'data');
@@ -33,6 +34,8 @@ function initializeDatabase() {
             school TEXT,
             board TEXT,
             subject TEXT,
+            classLevel TEXT,
+            competitiveExams TEXT,
             experience INTEGER,
             bio TEXT,
             rating REAL DEFAULT 0,
@@ -74,7 +77,10 @@ function initializeDatabase() {
         // Add new columns to existing users table
         db.run(`ALTER TABLE users ADD COLUMN hourlyRate REAL`, (err) => { /* ignore if exists */ });
         db.run(`ALTER TABLE users ADD COLUMN currency TEXT`, (err) => { /* ignore if exists */ });
+        db.run(`ALTER TABLE users ADD COLUMN classLevel TEXT`, (err) => { /* ignore if exists */ });
+        db.run(`ALTER TABLE users ADD COLUMN competitiveExams TEXT`, (err) => { /* ignore if exists */ });
     });
 }
 
 module.exports = { db, initializeDatabase };
+```
