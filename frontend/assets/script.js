@@ -148,9 +148,23 @@ async function updateProfile(event) {
     }
 
     // Handle multiple select for boards (for teachers)
-    if (user.userType === 'teacher' && formData.getAll('board').length > 0) {
-        updates.board = formData.getAll('board').join(', ');
-    }
+if (user.userType === 'teacher' && formData.getAll('board').length > 0) {
+    updates.board = formData.getAll('board').join(', ');
+}
+
+// Handle class levels
+if (formData.getAll('classLevel').length > 0) {
+    updates.classLevel = formData.getAll('classLevel').join(', ');
+} else {
+    updates.classLevel = null;
+}
+
+// Handle competitive exams
+if (formData.getAll('competitiveExams').length > 0) {
+    updates.competitiveExams = formData.getAll('competitiveExams').join(', ');
+} else {
+    updates.competitiveExams = null;
+}
 
     if (updates.experience && parseInt(updates.experience) < 0) {
         showAlert('Years of experience cannot be negative', 'error');
