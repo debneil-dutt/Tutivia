@@ -36,6 +36,8 @@
 
             const userSubjects = user.subject ? user.subject.split(',').map(s => s.trim()) : [];
             const userBoards = user.board ? user.board.split(',').map(s => s.trim()) : [];
+            const userClassLevels = user.classLevel ? user.classLevel.split(',').map(s => s.trim()) : [];
+const userCompetitiveExams = user.competitiveExams ? user.competitiveExams.split(',').map(s => s.trim()) : [];
             const profileHTML = `
                 <div style="background: white; padding: 2rem; border-radius: 8px;">
                     <h3>Current Profile Information</h3>
@@ -44,6 +46,9 @@
                         <p><strong>Email:</strong> ${user.email}</p>
                         <p><strong>Role:</strong> <span class="badge ${user.userType === 'teacher' ? 'teacher' : 'student'}">${user.userType.charAt(0).toUpperCase() + user.userType.slice(1)}</span></p>
                         ${user.subject ? `<p><strong>Subject/Expertise:</strong> ${user.subject}</p>` : ''}
+                        ${user.board ? `<p><strong>Boards:</strong> ${user.board}</p>` : ''}
+${user.classLevel ? `<p><strong>Class Levels:</strong> ${user.classLevel}</p>` : ''}
+${user.competitiveExams ? `<p><strong>Competitive Exams:</strong> ${user.competitiveExams}</p>` : ''}
                         ${user.experience ? `<p><strong>Experience:</strong> ${user.experience} years</p>` : ''}
                         ${user.hourlyRate ? `<p><strong>Live Class Rate:</strong> ${user.currency || ''}${user.hourlyRate} / hour</p>` : ''}
                     </div>
@@ -89,14 +94,48 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="editBoard">Board Expertise:</label>
-                                <div class="checkbox-group">
-                                    <label><input type="checkbox" name="board" value="CBSE" ${userBoards.includes('CBSE') ? 'checked' : ''}> CBSE</label>
-                                    <label><input type="checkbox" name="board" value="State Board" ${userBoards.includes('State Board') ? 'checked' : ''}> State Board</label>
-                                    <label><input type="checkbox" name="board" value="ICSE" ${userBoards.includes('ICSE') ? 'checked' : ''}> ICSE</label>
-                                    <label><input type="checkbox" name="board" value="IB" ${userBoards.includes('IB') ? 'checked' : ''}> IB</label>
-                                </div>
-                            </div>
+    <label for="editBoard">Board Expertise:</label>
+    <div class="checkbox-group">
+        <label><input type="checkbox" name="board" value="CBSE" ${userBoards.includes('CBSE') ? 'checked' : ''}> CBSE</label>
+        <label><input type="checkbox" name="board" value="ICSE" ${userBoards.includes('ICSE') ? 'checked' : ''}> ICSE</label>
+        <label><input type="checkbox" name="board" value="ISC" ${userBoards.includes('ISC') ? 'checked' : ''}> ISC</label>
+        <label><input type="checkbox" name="board" value="State Board" ${userBoards.includes('State Board') ? 'checked' : ''}> State Board</label>
+        <label><input type="checkbox" name="board" value="IGCSE" ${userBoards.includes('IGCSE') ? 'checked' : ''}> IGCSE</label>
+        <label><input type="checkbox" name="board" value="IB" ${userBoards.includes('IB') ? 'checked' : ''}> IB</label>
+        <label><input type="checkbox" name="board" value="GCSE" ${userBoards.includes('GCSE') ? 'checked' : ''}> GCSE</label>
+        <label><input type="checkbox" name="board" value="A Levels" ${userBoards.includes('A Levels') ? 'checked' : ''}> A Levels</label>
+        <label><input type="checkbox" name="board" value="AP" ${userBoards.includes('AP') ? 'checked' : ''}> AP</label>
+        <label><input type="checkbox" name="board" value="US High School Curriculum" ${userBoards.includes('US High School Curriculum') ? 'checked' : ''}> US High School Curriculum</label>
+        <label><input type="checkbox" name="board" value="Cambridge International" ${userBoards.includes('Cambridge International') ? 'checked' : ''}> Cambridge International</label>
+    </div>
+</div>
+<div class="form-group">
+    <label>Class Levels Taught:</label>
+    <div class="checkbox-group">
+        <label><input type="checkbox" name="classLevel" value="Class 6-8" ${userClassLevels.includes('Class 6-8') ? 'checked' : ''}> Class 6-8</label>
+        <label><input type="checkbox" name="classLevel" value="Class 9-10" ${userClassLevels.includes('Class 9-10') ? 'checked' : ''}> Class 9-10</label>
+        <label><input type="checkbox" name="classLevel" value="Class 11-12" ${userClassLevels.includes('Class 11-12') ? 'checked' : ''}> Class 11-12</label>
+        <label><input type="checkbox" name="classLevel" value="Undergraduate" ${userClassLevels.includes('Undergraduate') ? 'checked' : ''}> Undergraduate</label>
+        <label><input type="checkbox" name="classLevel" value="Postgraduate" ${userClassLevels.includes('Postgraduate') ? 'checked' : ''}> Postgraduate</label>
+        <label><input type="checkbox" name="classLevel" value="Adult Learner" ${userClassLevels.includes('Adult Learner') ? 'checked' : ''}> Adult Learner</label>
+    </div>
+</div>
+<div class="form-group">
+    <label>Competitive Exams Taught:</label>
+    <div class="checkbox-group">
+        <label><input type="checkbox" name="competitiveExams" value="JEE Main" ${userCompetitiveExams.includes('JEE Main') ? 'checked' : ''}> JEE Main</label>
+        <label><input type="checkbox" name="competitiveExams" value="JEE Advanced" ${userCompetitiveExams.includes('JEE Advanced') ? 'checked' : ''}> JEE Advanced</label>
+        <label><input type="checkbox" name="competitiveExams" value="NEET" ${userCompetitiveExams.includes('NEET') ? 'checked' : ''}> NEET</label>
+        <label><input type="checkbox" name="competitiveExams" value="CLAT" ${userCompetitiveExams.includes('CLAT') ? 'checked' : ''}> CLAT</label>
+        <label><input type="checkbox" name="competitiveExams" value="CUET" ${userCompetitiveExams.includes('CUET') ? 'checked' : ''}> CUET</label>
+        <label><input type="checkbox" name="competitiveExams" value="NDA" ${userCompetitiveExams.includes('NDA') ? 'checked' : ''}> NDA</label>
+        <label><input type="checkbox" name="competitiveExams" value="Olympiads" ${userCompetitiveExams.includes('Olympiads') ? 'checked' : ''}> Olympiads</label>
+        <label><input type="checkbox" name="competitiveExams" value="SAT" ${userCompetitiveExams.includes('SAT') ? 'checked' : ''}> SAT</label>
+        <label><input type="checkbox" name="competitiveExams" value="ACT" ${userCompetitiveExams.includes('ACT') ? 'checked' : ''}> ACT</label>
+        <label><input type="checkbox" name="competitiveExams" value="IELTS" ${userCompetitiveExams.includes('IELTS') ? 'checked' : ''}> IELTS</label>
+        <label><input type="checkbox" name="competitiveExams" value="TOEFL" ${userCompetitiveExams.includes('TOEFL') ? 'checked' : ''}> TOEFL</label>
+    </div>
+</div>
                             <div class="form-group">
                                 <label for="editBio">Bio:</label>
                                 <textarea id="editBio" name="bio" rows="3">${user.bio || ''}</textarea>
@@ -120,15 +159,31 @@
                                 <label for="editSubject">Subjects Needed Help In:</label>
                                 <div class="checkbox-group">
                                     <label><input type="checkbox" name="subject" value="Mathematics" ${userSubjects.includes('Mathematics') ? 'checked' : ''}> Mathematics</label>
-                                    <label><input type="checkbox" name="subject" value="Physics" ${userSubjects.includes('Physics') ? 'checked' : ''}> Physics</label>
-                                    <label><input type="checkbox" name="subject" value="Chemistry" ${userSubjects.includes('Chemistry') ? 'checked' : ''}> Chemistry</label>
-                                    <label><input type="checkbox" name="subject" value="Biology" ${userSubjects.includes('Biology') ? 'checked' : ''}> Biology</label>
-                                    <label><input type="checkbox" name="subject" value="History" ${userSubjects.includes('History') ? 'checked' : ''}> History</label>
-                                    <label><input type="checkbox" name="subject" value="Geography" ${userSubjects.includes('Geography') ? 'checked' : ''}> Geography</label>
-                                    <label><input type="checkbox" name="subject" value="English" ${userSubjects.includes('English') ? 'checked' : ''}> English</label>
-                                    <label><input type="checkbox" name="subject" value="Bengali" ${userSubjects.includes('Bengali') ? 'checked' : ''}> Bengali</label>
-                                    <label><input type="checkbox" name="subject" value="Hindi" ${userSubjects.includes('Hindi') ? 'checked' : ''}> Hindi</label>
-                                    <label><input type="checkbox" name="subject" value="Computer" ${userSubjects.includes('Computer') ? 'checked' : ''}> Computer</label>
+<label><input type="checkbox" name="subject" value="Physics" ${userSubjects.includes('Physics') ? 'checked' : ''}> Physics</label>
+<label><input type="checkbox" name="subject" value="Chemistry" ${userSubjects.includes('Chemistry') ? 'checked' : ''}> Chemistry</label>
+<label><input type="checkbox" name="subject" value="Biology" ${userSubjects.includes('Biology') ? 'checked' : ''}> Biology</label>
+<label><input type="checkbox" name="subject" value="Computer Science" ${userSubjects.includes('Computer Science') ? 'checked' : ''}> Computer Science</label>
+<label><input type="checkbox" name="subject" value="Environmental Science" ${userSubjects.includes('Environmental Science') ? 'checked' : ''}> Environmental Science</label>
+<label><input type="checkbox" name="subject" value="Statistics" ${userSubjects.includes('Statistics') ? 'checked' : ''}> Statistics</label>
+
+<label><input type="checkbox" name="subject" value="Accountancy" ${userSubjects.includes('Accountancy') ? 'checked' : ''}> Accountancy</label>
+<label><input type="checkbox" name="subject" value="Business Studies" ${userSubjects.includes('Business Studies') ? 'checked' : ''}> Business Studies</label>
+<label><input type="checkbox" name="subject" value="Economics" ${userSubjects.includes('Economics') ? 'checked' : ''}> Economics</label>
+
+<label><input type="checkbox" name="subject" value="History" ${userSubjects.includes('History') ? 'checked' : ''}> History</label>
+<label><input type="checkbox" name="subject" value="Geography" ${userSubjects.includes('Geography') ? 'checked' : ''}> Geography</label>
+<label><input type="checkbox" name="subject" value="Political Science" ${userSubjects.includes('Political Science') ? 'checked' : ''}> Political Science</label>
+<label><input type="checkbox" name="subject" value="Sociology" ${userSubjects.includes('Sociology') ? 'checked' : ''}> Sociology</label>
+<label><input type="checkbox" name="subject" value="Psychology" ${userSubjects.includes('Psychology') ? 'checked' : ''}> Psychology</label>
+<label><input type="checkbox" name="subject" value="Philosophy" ${userSubjects.includes('Philosophy') ? 'checked' : ''}> Philosophy</label>
+
+<label><input type="checkbox" name="subject" value="English" ${userSubjects.includes('English') ? 'checked' : ''}> English</label>
+<label><input type="checkbox" name="subject" value="Hindi" ${userSubjects.includes('Hindi') ? 'checked' : ''}> Hindi</label>
+<label><input type="checkbox" name="subject" value="Bengali" ${userSubjects.includes('Bengali') ? 'checked' : ''}> Bengali</label>
+<label><input type="checkbox" name="subject" value="French" ${userSubjects.includes('French') ? 'checked' : ''}> French</label>
+<label><input type="checkbox" name="subject" value="German" ${userSubjects.includes('German') ? 'checked' : ''}> German</label>
+<label><input type="checkbox" name="subject" value="Spanish" ${userSubjects.includes('Spanish') ? 'checked' : ''}> Spanish</label>
+<label><input type="checkbox" name="subject" value="Sanskrit" ${userSubjects.includes('Sanskrit') ? 'checked' : ''}> Sanskrit</label>
                                 </div>
                             </div>
                         `}
