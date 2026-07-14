@@ -30,27 +30,76 @@ function verifyPassword(password, storedHashString) {
 
 // Signup
 router.post('/signup', (req, res) => {
-    const { name, email, password, userType, school, board, subject, experience, bio, hourlyRate, currency } = req.body;
+    const {
+        name,
+        email,
+        password,
+        userType,
+        school,
+        board,
+        subject,
+        classLevel,
+        competitiveExams,
+        experience,
+        bio,
+        hourlyRate,
+        currency
+    } = req.body;
 
     // Validation
     if (!name || !email || !password || !userType) {
         return res.json({ success: false, error: 'Missing required fields' });
     }
 
-    const query = `INSERT INTO users (name, email, password, userType, school, board, subject, experience, bio, hourlyRate, currency) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO users (
+        name,
+        email,
+        password,
+        userType,
+        school,
+        board,
+        subject,
+        classLevel,
+        competitiveExams,
+        experience,
+        bio,
+        hourlyRate,
+        currency
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const hashedPassword = hashPassword(password);
 
-    db.run(query, [name, email, hashedPassword, userType, school || null, board || null, subject || null, experience || null, bio || null, hourlyRate || null, currency || null], function(err) {
-        if (err) {
-            if (err.message.includes('UNIQUE constraint failed')) {
-                return res.json({ success: false, error: 'Email already registered' });
+    db.run(
+        query,
+        [
+            name,
+            email,
+            hashedPassword,
+            userType,
+            school || null,
+            board || null,
+            subject || null,
+            classLevel || null,
+            competitiveExams || null,
+            experience || null,
+            bio || null,
+            hourlyRate || null,
+            currency || null
+        ],
+        function(err) {
+            if (err) {
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    return res.json({ success: false, error: 'Email already registered' });
+                }
+                return res.json({ success: false, error: 'Error creating account' });
             }
-            return res.json({ success: false, error: 'Error creating account' });
+
+            res.json({
+                success: true,
+                userId: this.lastID
+            });
         }
-        res.json({ success: true, userId: this.lastID });
-    });
+    );
 });
 
 // Login
@@ -82,6 +131,8 @@ router.post('/login', (req, res) => {
                     userType: user.userType,
                     subject: user.subject,
                     board: user.board,
+                    classLevel: user.classLevel,
+                    competitiveExams: user.competitiveExams,
                     school: user.school,
                     experience: user.experience,
                     bio: user.bio,
@@ -94,22 +145,28 @@ router.post('/login', (req, res) => {
         // Try to verify using the secure hash
         if (verifyPassword(password, user.password)) {
             return sendSuccessResponse();
-        } 
-        
+        }
+
         // Fallback: Graceful migration for existing plaintext passwords
         if (user.password === password) {
-            // Password matched exactly in plaintext. 
-            // We must now hash it and update the database so they are secure.
             const newHashedPassword = hashPassword(password);
-            db.run(`UPDATE users SET password = ? WHERE id = ?`, [newHashedPassword, user.id], (updateErr) => {
-                if (updateErr) console.error("Failed to migrate password for user", user.id);
-                // We still log them in even if the migration update fails, 
-                // they can try again next time.
-                return sendSuccessResponse();
-            });
+
+            db.run(
+                `UPDATE users SET password = ? WHERE id = ?`,
+                [newHashedPassword, user.id],
+                (updateErr) => {
+                    if (updateErr) {
+                        console.error("Failed to migrate password for user", user.id);
+                    }
+
+                    return sendSuccessResponse();
+                }
+            );
         } else {
-            // Neither hash matched nor plaintext matched
-            return res.json({ success: false, error: 'Invalid email or password' });
+            return res.json({
+                success: false,
+                error: 'Invalid email or password'
+            });
         }
     });
 });
@@ -117,10 +174,26 @@ router.post('/login', (req, res) => {
 // Update user profile
 router.put('/profile/:userId', (req, res) => {
     const { userId } = req.params;
-    const { name, email, bio, subject, experience, board, school, hourlyRate, currency } = req.body;
+
+    const {
+        name,
+        email,
+        bio,
+        subject,
+        classLevel,
+        competitiveExams,
+        experience,
+        board,
+        school,
+        hourlyRate,
+        currency
+    } = req.body;
 
     if (!userId) {
-        return res.json({ success: false, error: 'User ID required' });
+        return res.json({
+            success: false,
+            error: 'User ID required'
+        });
     }
 
     const updates = [];
@@ -130,41 +203,62 @@ router.put('/profile/:userId', (req, res) => {
         updates.push('name = ?');
         params.push(name);
     }
+
     if (email) {
         updates.push('email = ?');
         params.push(email);
     }
+
     if (bio) {
         updates.push('bio = ?');
         params.push(bio);
     }
+
     if (subject) {
         updates.push('subject = ?');
         params.push(subject);
     }
+
+    if (classLevel) {
+        updates.push('classLevel = ?');
+        params.push(classLevel);
+    }
+
+    if (competitiveExams) {
+        updates.push('competitiveExams = ?');
+        params.push(competitiveExams);
+    }
+
     if (experience !== undefined) {
         updates.push('experience = ?');
         params.push(experience);
     }
+
     if (board) {
         updates.push('board = ?');
         params.push(board);
     }
+
     if (school) {
         updates.push('school = ?');
         params.push(school);
     }
+
     if (hourlyRate !== undefined) {
         updates.push('hourlyRate = ?');
         params.push(hourlyRate);
     }
+
     if (currency) {
         updates.push('currency = ?');
         params.push(currency);
     }
 
     if (updates.length === 0) {
-        return res.json({ success: false, error: 'No fields to update' });
+        return res.json({
+            success: false,
+            error: 'No fields to update'
+        });
     }
 
     params.push(userId);
@@ -173,16 +267,29 @@ router.put('/profile/:userId', (req, res) => {
 
     db.run(query, params, (err) => {
         if (err) {
-            return res.json({ success: false, error: 'Error updating profile' });
+            return res.json({
+                success: false,
+                error: 'Error updating profile'
+            });
         }
 
-        // Fetch and return updated user data
-        db.get(`SELECT id, name, email, userType, subject, experience, board, school, bio, hourlyRate, currency FROM users WHERE id = ?`, [userId], (err, user) => {
-            if (err) {
-                return res.json({ success: false, error: 'Error fetching updated profile' });
+        db.get(
+            `SELECT id, name, email, userType, subject, board, classLevel, competitiveExams, experience, school, bio, hourlyRate, currency FROM users WHERE id = ?`,
+            [userId],
+            (err, user) => {
+                if (err) {
+                    return res.json({
+                        success: false,
+                        error: 'Error fetching updated profile'
+                    });
+                }
+
+                res.json({
+                    success: true,
+                    user
+                });
             }
-            res.json({ success: true, user });
-        });
+        );
     });
 });
 
@@ -190,15 +297,30 @@ router.put('/profile/:userId', (req, res) => {
 router.get('/profile/:userId', (req, res) => {
     const { userId } = req.params;
 
-    db.get(`SELECT id, name, email, userType, subject, experience, board, school, bio, hourlyRate, currency FROM users WHERE id = ?`, [userId], (err, user) => {
-        if (err) {
-            return res.json({ success: false, error: 'Error fetching profile' });
+    db.get(
+        `SELECT id, name, email, userType, subject, board, classLevel, competitiveExams, experience, school, bio, hourlyRate, currency FROM users WHERE id = ?`,
+        [userId],
+        (err, user) => {
+            if (err) {
+                return res.json({
+                    success: false,
+                    error: 'Error fetching profile'
+                });
+            }
+
+            if (!user) {
+                return res.json({
+                    success: false,
+                    error: 'User not found'
+                });
+            }
+
+            res.json({
+                success: true,
+                user
+            });
         }
-        if (!user) {
-            return res.json({ success: false, error: 'User not found' });
-        }
-        res.json({ success: true, user });
-    });
+    );
 });
 
 // Delete user profile
@@ -206,23 +328,38 @@ router.delete('/profile/:userId', (req, res) => {
     const { userId } = req.params;
 
     if (!userId) {
-        return res.json({ success: false, error: 'User ID required' });
+        return res.json({
+            success: false,
+            error: 'User ID required'
+        });
     }
 
     db.serialize(() => {
         // Delete solutions provided by the user (if teacher)
         db.run(`DELETE FROM solutions WHERE teacherId = ?`, [userId]);
+
         // Delete solutions belonging to doubts asked by the user (if student)
-        db.run(`DELETE FROM solutions WHERE doubtId IN (SELECT id FROM doubts WHERE studentId = ?)`, [userId]);
+        db.run(
+            `DELETE FROM solutions WHERE doubtId IN (SELECT id FROM doubts WHERE studentId = ?)`,
+            [userId]
+        );
+
         // Delete doubts asked by the user (if student)
         db.run(`DELETE FROM doubts WHERE studentId = ?`, [userId]);
-        
+
         // Finally, delete the user account
         db.run(`DELETE FROM users WHERE id = ?`, [userId], function(err) {
             if (err) {
-                return res.json({ success: false, error: 'Error deleting user account' });
+                return res.json({
+                    success: false,
+                    error: 'Error deleting user account'
+                });
             }
-            res.json({ success: true, message: 'Account deleted successfully' });
+
+            res.json({
+                success: true,
+                message: 'Account deleted successfully'
+            });
         });
     });
 });
@@ -232,16 +369,26 @@ router.post('/messages', (req, res) => {
     const { senderId, recipientId, subject, message } = req.body;
 
     if (!senderId || !recipientId || !subject || !message) {
-        return res.json({ success: false, error: 'Missing required fields' });
+        return res.json({
+            success: false,
+            error: 'Missing required fields'
+        });
     }
 
     const query = `INSERT INTO messages (senderId, recipientId, subject, message) VALUES (?, ?, ?, ?)`;
 
     db.run(query, [senderId, recipientId, subject, message], function(err) {
         if (err) {
-            return res.json({ success: false, error: 'Error sending message' });
+            return res.json({
+                success: false,
+                error: 'Error sending message'
+            });
         }
-        res.json({ success: true, messageId: this.lastID });
+
+        res.json({
+            success: true,
+            messageId: this.lastID
+        });
     });
 });
 
@@ -249,17 +396,23 @@ router.post('/messages', (req, res) => {
 router.get('/messages/:userId', (req, res) => {
     const { userId } = req.params;
 
-    const query = `SELECT m.id, m.senderId, m.subject, m.message, m.createdAt, u.name as senderName 
-                   FROM messages m 
-                   JOIN users u ON m.senderId = u.id 
-                   WHERE m.recipientId = ? 
+    const query = `SELECT m.id, m.senderId, m.subject, m.message, m.createdAt, u.name as senderName
+                   FROM messages m
+                   JOIN users u ON m.senderId = u.id
+                   WHERE m.recipientId = ?
                    ORDER BY m.createdAt DESC`;
 
     db.all(query, [userId], (err, messages) => {
         if (err) {
-            return res.json({ success: false, error: 'Error fetching messages' });
+            return res.json({
+                success: false,
+                error: 'Error fetching messages'
+            });
         }
-        res.json({ messages: messages || [] });
+
+        res.json({
+            messages: messages || []
+        });
     });
 });
 
