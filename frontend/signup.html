@@ -40,83 +40,197 @@
                 <!-- Removed from general, handled separately for student and teacher -->
 
             <!-- Student specific -->
-            <div id="studentFields">
-                <div class="form-group">
-                    <label for="studentBoard">Board</label>
-                    <select id="studentBoard">
-                        <option value="">Select Board</option>
-                        <option value="CBSE">CBSE</option>
-                        <option value="State Board">State Board</option>
-                        <option value="ICSE">ICSE</option>
-                        <option value="IB">IB</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="subject">Subjects Needed Help In</label>
-                    <div class="checkbox-group" id="studentSubjectsGroup">
-                        <label><input type="checkbox" name="subject" value="Mathematics"> Mathematics</label>
-                        <label><input type="checkbox" name="subject" value="Physics"> Physics</label>
-                        <label><input type="checkbox" name="subject" value="Chemistry"> Chemistry</label>
-                        <label><input type="checkbox" name="subject" value="Biology"> Biology</label>
-                        <label><input type="checkbox" name="subject" value="History"> History</label>
-                        <label><input type="checkbox" name="subject" value="Geography"> Geography</label>
-                        <label><input type="checkbox" name="subject" value="English"> English</label>
-                        <label><input type="checkbox" name="subject" value="Bengali"> Bengali</label>
-                        <label><input type="checkbox" name="subject" value="Hindi"> Hindi</label>
-                        <label><input type="checkbox" name="subject" value="Computer"> Computer</label>
-                    </div>
-                </div>
-            </div>
+<div id="studentFields">
+    <div class="form-group">
+        <label for="studentBoard">Board</label>
+        <select id="studentBoard">
+            <option value="">Select Board</option>
+            <option value="CBSE">CBSE</option>
+            <option value="ICSE">ICSE</option>
+            <option value="ISC">ISC</option>
+            <option value="State Board">State Board</option>
+            <option value="IGCSE">IGCSE</option>
+            <option value="IB">IB</option>
+            <option value="GCSE">GCSE</option>
+            <option value="A Levels">A Levels</option>
+            <option value="AP">AP</option>
+            <option value="US High School Curriculum">US High School Curriculum</option>
+            <option value="Cambridge International">Cambridge International</option>
+        </select>
+    </div>
 
-            <!-- Teacher specific -->
-            <div id="teacherFields" style="display:none;">
-                <div class="form-group">
-                    <label for="expertise">Subject Expertise</label>
-                    <div class="checkbox-group" id="teacherSubjectsGroup">
-                        <label><input type="checkbox" name="expertise" value="Mathematics"> Mathematics</label>
-                        <label><input type="checkbox" name="expertise" value="Physics"> Physics</label>
-                        <label><input type="checkbox" name="expertise" value="Chemistry"> Chemistry</label>
-                        <label><input type="checkbox" name="expertise" value="Biology"> Biology</label>
-                        <label><input type="checkbox" name="expertise" value="History"> History</label>
-                        <label><input type="checkbox" name="expertise" value="Geography"> Geography</label>
-                        <label><input type="checkbox" name="expertise" value="English"> English</label>
-                        <label><input type="checkbox" name="expertise" value="Bengali"> Bengali</label>
-                        <label><input type="checkbox" name="expertise" value="Hindi"> Hindi</label>
-                        <label><input type="checkbox" name="expertise" value="Computer"> Computer</label>
-                    </div>
-                </div>
+    <div class="form-group">
+        <label for="studentClassLevel">Class Level</label>
+        <select id="studentClassLevel">
+            <option value="">Select Class Level</option>
+            <option value="Class 6-8">Class 6-8</option>
+            <option value="Class 9-10">Class 9-10</option>
+            <option value="Class 11-12">Class 11-12</option>
+            <option value="Undergraduate">Undergraduate</option>
+            <option value="Postgraduate">Postgraduate</option>
+            <option value="Adult Learner">Adult Learner</option>
+        </select>
+    </div>
 
-                <div class="form-group">
-                    <label for="teacherBoard">Board Expertise</label>
-                    <div class="checkbox-group" id="teacherBoardGroup">
-                        <label><input type="checkbox" name="board" value="CBSE"> CBSE</label>
-                        <label><input type="checkbox" name="board" value="State Board"> State Board</label>
-                        <label><input type="checkbox" name="board" value="ICSE"> ICSE</label>
-                        <label><input type="checkbox" name="board" value="IB"> IB</label>
-                    </div>
-                </div>
+    <div class="form-group">
+        <label for="subject">Subjects Needed Help In</label>
+        <div class="checkbox-group" id="studentSubjectsGroup">
 
-                <div class="form-group">
-                    <label for="experience">Years of Experience</label>
-                    <input type="number" id="experience" placeholder="e.g., 5" min="0">
-                </div>
+            <label><input type="checkbox" name="subject" value="Mathematics"> Mathematics</label>
+            <label><input type="checkbox" name="subject" value="Physics"> Physics</label>
+            <label><input type="checkbox" name="subject" value="Chemistry"> Chemistry</label>
+            <label><input type="checkbox" name="subject" value="Biology"> Biology</label>
+            <label><input type="checkbox" name="subject" value="Computer Science"> Computer Science</label>
+            <label><input type="checkbox" name="subject" value="Environmental Science"> Environmental Science</label>
+            <label><input type="checkbox" name="subject" value="Statistics"> Statistics</label>
 
-                <div class="form-group">
-                    <label for="hourlyRate">Live Class Hourly Rate</label>
-                    <div style="display: flex; gap: 10px;">
-                        <select id="currency" style="width: auto; padding: 0.8rem;">
-                            <option value="₹">₹ (INR)</option>
-                            <option value="$">$ (USD)</option>
-                        </select>
-                        <input type="number" id="hourlyRate" placeholder="e.g., 500" min="0" style="flex: 1;">
-                    </div>
-                </div>
+            <label><input type="checkbox" name="subject" value="Accountancy"> Accountancy</label>
+            <label><input type="checkbox" name="subject" value="Business Studies"> Business Studies</label>
+            <label><input type="checkbox" name="subject" value="Economics"> Economics</label>
 
-                <div class="form-group">
-                    <label for="bio">About You</label>
-                    <textarea id="bio" placeholder="Tell students about your teaching style and qualifications"></textarea>
-                </div>
-            </div>
+            <label><input type="checkbox" name="subject" value="History"> History</label>
+            <label><input type="checkbox" name="subject" value="Geography"> Geography</label>
+            <label><input type="checkbox" name="subject" value="Political Science"> Political Science</label>
+            <label><input type="checkbox" name="subject" value="Sociology"> Sociology</label>
+            <label><input type="checkbox" name="subject" value="Psychology"> Psychology</label>
+            <label><input type="checkbox" name="subject" value="Philosophy"> Philosophy</label>
+
+            <label><input type="checkbox" name="subject" value="English"> English</label>
+            <label><input type="checkbox" name="subject" value="Hindi"> Hindi</label>
+            <label><input type="checkbox" name="subject" value="Bengali"> Bengali</label>
+            <label><input type="checkbox" name="subject" value="French"> French</label>
+            <label><input type="checkbox" name="subject" value="German"> German</label>
+            <label><input type="checkbox" name="subject" value="Spanish"> Spanish</label>
+            <label><input type="checkbox" name="subject" value="Sanskrit"> Sanskrit</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Competitive Exams Preparing For</label>
+        <div class="checkbox-group" id="studentExamsGroup">
+            <label><input type="checkbox" value="JEE Main"> JEE Main</label>
+            <label><input type="checkbox" value="JEE Advanced"> JEE Advanced</label>
+            <label><input type="checkbox" value="NEET"> NEET</label>
+            <label><input type="checkbox" value="CLAT"> CLAT</label>
+            <label><input type="checkbox" value="CUET"> CUET</label>
+            <label><input type="checkbox" value="NDA"> NDA</label>
+            <label><input type="checkbox" value="Olympiads"> Olympiads</label>
+            <label><input type="checkbox" value="SAT"> SAT</label>
+            <label><input type="checkbox" value="ACT"> ACT</label>
+            <label><input type="checkbox" value="IELTS"> IELTS</label>
+            <label><input type="checkbox" value="TOEFL"> TOEFL</label>
+        </div>
+    </div>
+</div>
+
+           <!-- Teacher specific -->
+<div id="teacherFields" style="display:none;">
+
+    <div class="form-group">
+        <label for="teacherBoard">Boards Taught</label>
+        <div class="checkbox-group" id="teacherBoardGroup">
+            <label><input type="checkbox" value="CBSE"> CBSE</label>
+            <label><input type="checkbox" value="ICSE"> ICSE</label>
+            <label><input type="checkbox" value="ISC"> ISC</label>
+            <label><input type="checkbox" value="State Board"> State Board</label>
+            <label><input type="checkbox" value="IGCSE"> IGCSE</label>
+            <label><input type="checkbox" value="IB"> IB</label>
+            <label><input type="checkbox" value="GCSE"> GCSE</label>
+            <label><input type="checkbox" value="A Levels"> A Levels</label>
+            <label><input type="checkbox" value="AP"> AP</label>
+            <label><input type="checkbox" value="US High School Curriculum"> US High School Curriculum</label>
+            <label><input type="checkbox" value="Cambridge International"> Cambridge International</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Class Levels Taught</label>
+        <div class="checkbox-group" id="teacherClassLevelGroup">
+            <label><input type="checkbox" value="Class 6-8"> Class 6-8</label>
+            <label><input type="checkbox" value="Class 9-10"> Class 9-10</label>
+            <label><input type="checkbox" value="Class 11-12"> Class 11-12</label>
+            <label><input type="checkbox" value="Undergraduate"> Undergraduate</label>
+            <label><input type="checkbox" value="Postgraduate"> Postgraduate</label>
+            <label><input type="checkbox" value="Adult Learner"> Adult Learner</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Subjects Taught</label>
+        <div class="checkbox-group" id="teacherSubjectsGroup">
+
+            <label><input type="checkbox" value="Mathematics"> Mathematics</label>
+            <label><input type="checkbox" value="Physics"> Physics</label>
+            <label><input type="checkbox" value="Chemistry"> Chemistry</label>
+            <label><input type="checkbox" value="Biology"> Biology</label>
+            <label><input type="checkbox" value="Computer Science"> Computer Science</label>
+            <label><input type="checkbox" value="Environmental Science"> Environmental Science</label>
+            <label><input type="checkbox" value="Statistics"> Statistics</label>
+
+            <label><input type="checkbox" value="Accountancy"> Accountancy</label>
+            <label><input type="checkbox" value="Business Studies"> Business Studies</label>
+            <label><input type="checkbox" value="Economics"> Economics</label>
+
+            <label><input type="checkbox" value="History"> History</label>
+            <label><input type="checkbox" value="Geography"> Geography</label>
+            <label><input type="checkbox" value="Political Science"> Political Science</label>
+            <label><input type="checkbox" value="Sociology"> Sociology</label>
+            <label><input type="checkbox" value="Psychology"> Psychology</label>
+            <label><input type="checkbox" value="Philosophy"> Philosophy</label>
+
+            <label><input type="checkbox" value="English"> English</label>
+            <label><input type="checkbox" value="Hindi"> Hindi</label>
+            <label><input type="checkbox" value="Bengali"> Bengali</label>
+            <label><input type="checkbox" value="French"> French</label>
+            <label><input type="checkbox" value="German"> German</label>
+            <label><input type="checkbox" value="Spanish"> Spanish</label>
+            <label><input type="checkbox" value="Sanskrit"> Sanskrit</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Competitive Exams Taught</label>
+        <div class="checkbox-group" id="teacherExamsGroup">
+            <label><input type="checkbox" value="JEE Main"> JEE Main</label>
+            <label><input type="checkbox" value="JEE Advanced"> JEE Advanced</label>
+            <label><input type="checkbox" value="NEET"> NEET</label>
+            <label><input type="checkbox" value="CLAT"> CLAT</label>
+            <label><input type="checkbox" value="CUET"> CUET</label>
+            <label><input type="checkbox" value="NDA"> NDA</label>
+            <label><input type="checkbox" value="Olympiads"> Olympiads</label>
+            <label><input type="checkbox" value="SAT"> SAT</label>
+            <label><input type="checkbox" value="ACT"> ACT</label>
+            <label><input type="checkbox" value="IELTS"> IELTS</label>
+            <label><input type="checkbox" value="TOEFL"> TOEFL</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="experience">Years of Experience</label>
+        <input type="number" id="experience" min="0">
+    </div>
+
+    <div class="form-group">
+        <label for="hourlyRate">Hourly Rate</label>
+        <input type="number" id="hourlyRate" min="0">
+    </div>
+
+    <div class="form-group">
+        <label for="currency">Currency</label>
+        <select id="currency">
+            <option value="INR">INR</option>
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+            <option value="EUR">EUR</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio"></textarea>
+    </div>
+
+</div>
 
             <button type="submit" class="btn-submit">Create Account</button>
         </form>
@@ -173,11 +287,34 @@
                     showAlert('Please select at least 1 subject you need help in', 'error');
                     return;
                 }
-                payload.subject = selectedSubjects.join(', ');
-                payload.board = board;
+                const classLevel = document.getElementById('studentClassLevel').value;
+                if (!classLevel) {
+    showAlert('Please select your class level', 'error');
+    return;
+}
+
+const selectedExams = Array.from(
+    document.querySelectorAll('#studentExamsGroup input[type="checkbox"]:checked')
+).map(cb => cb.value);
+
+payload.subject = selectedSubjects.join(', ');
+payload.board = board;
+payload.classLevel = classLevel || null;
+payload.competitiveExams = selectedExams.join(', ') || null;
             } else {
                 const selectedExpertise = Array.from(document.querySelectorAll('#teacherSubjectsGroup input[type="checkbox"]:checked')).map(cb => cb.value);
                 const selectedBoards = Array.from(document.querySelectorAll('#teacherBoardGroup input[type="checkbox"]:checked')).map(cb => cb.value);
+                const selectedClassLevels = Array.from(
+    document.querySelectorAll('#teacherClassLevelGroup input[type="checkbox"]:checked')
+).map(cb => cb.value);
+                if (selectedClassLevels.length === 0) {
+    showAlert('Please select at least 1 class level you teach', 'error');
+    return;
+}
+
+const selectedExams = Array.from(
+    document.querySelectorAll('#teacherExamsGroup input[type="checkbox"]:checked')
+).map(cb => cb.value);
                 
                 if (selectedExpertise.length === 0) {
                     showAlert('Please select at least 1 subject expertise', 'error');
@@ -196,8 +333,10 @@
                 }
 
                 payload.subject = selectedExpertise.join(', ');
-                payload.board = selectedBoards.join(', ');
-                payload.experience = parseInt(document.getElementById('experience').value) || null;
+payload.board = selectedBoards.join(', ');
+payload.classLevel = selectedClassLevels.join(', ') || null;
+payload.competitiveExams = selectedExams.join(', ') || null;
+payload.experience = parseInt(document.getElementById('experience').value) || null;
                 payload.hourlyRate = parseFloat(hourlyRate);
                 payload.currency = document.getElementById('currency').value;
                 payload.bio = document.getElementById('bio').value || null;
@@ -224,7 +363,9 @@
                         experience: payload.experience,
                         hourlyRate: payload.hourlyRate,
                         currency: payload.currency,
-                        bio: payload.bio
+                        bio: payload.bio,
+classLevel: payload.classLevel,
+competitiveExams: payload.competitiveExams
                     }));
                     showAlert('Account created successfully! Redirecting...', 'success');
                     setTimeout(() => window.location.href = 'index.html', 1500);
